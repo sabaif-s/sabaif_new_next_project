@@ -17,7 +17,7 @@ const User = sequelize.define('User', {
   username: {
     type: DataTypes.STRING,
     allowNull: false,  // Ensure username is required
-    unique: true,      // Ensure username is unique
+    unique: false,      // Ensure username is unique
     validate: {
       len: [3, 30],    // Ensure username is between 3 and 30 characters
     },
@@ -30,7 +30,7 @@ const User = sequelize.define('User', {
 // Sync the model with the database (you can use `sequelize.sync()` for testing)
 const syncDatabase = async () => {
   try {
-    await sequelize.sync({ alter: false });  // Sync the models (alter will modify the tables if needed)
+    await sequelize.sync({ force: false, alter:true });  // Sync the models (alter will modify the tables if needed)
     console.log('User model synchronized');
   } catch (error) {
     console.error('Error syncing User model:', error);
