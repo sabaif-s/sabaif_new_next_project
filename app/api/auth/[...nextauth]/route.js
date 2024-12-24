@@ -1,16 +1,14 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
-import User from '@/models/user';
-// Mock user data (Replace this with a database lookup)
-const users = [
-  {
-    id: 1,
-    email: "testuser@gmail.com",
-    password: await bcrypt.hash("password123", 10), // Hashed password
-  },
-];
-
+import User from "@/models/user"; // Ensure this is your actual User model path
+class CustomError extends Error {
+    constructor(message, statusCode) {
+      super(message);
+      this.name = "CustomError";
+      this.statusCode = statusCode;
+    }
+  }
 const authOptions = {
   providers: [
     CredentialsProvider({
@@ -19,24 +17,37 @@ const authOptions = {
         email: { label: "Email", type: "email", placeholder: "Email" },
         password: { label: "Password", type: "password" },
       },
+      
       async authorize(credentials) {
-        const findUser= await User.findOne({where:{email:credentials.email}});
-        if(findUser){
-            console.log(findUser);
-        }
-        else{
-            console.log("no such email in db");
-        }
-        const user = users.find(
-          (user) => user.email === credentials.email
-        );
-
-        if (user && (await bcrypt.compare(credentials.password, user.password))) {
-          return { id: user.id, email: user.email };
+        // Ensure email and password are provided
+        if (!credentials.email || !credentials.password) {
+          throw new Error("Email and Password are required");
         }
 
-        // If login fails, return null
-        return null;
+        // Fetch user from database
+        const findUser = await User.findOne({ where: { email: credentials.email } });
+
+        // Check if user exists
+        if (!findUser) {
+           
+        
+  throw new CustomError("no user", 404); // 404: Not
+           // Return null to indicate failure
+        }
+      console.log(credentials.password);
+        // Compare password
+        const isPasswordValid = await bcrypt.compare(credentials.password, findUser.password);
+        //  const isValid=credentials.password == "saba" ? true:false;
+        if (!isPasswordValid) {
+          console.error("Invalid credentials");
+          return null; // Return null to indicate failure
+        }
+
+        // Successful authentication
+        return {
+          id: findUser.id,
+          email: findUser.email,
+        };
       },
     }),
   ],
@@ -46,7 +57,7 @@ const authOptions = {
     strategy: "jwt",
   },
 
-  // Optionally set a secret for encrypting JWT
+  // Secret for encrypting JWT
   secret: process.env.NEXTAUTH_SECRET,
 
   callbacks: {
@@ -62,18 +73,21 @@ const authOptions = {
 
     // Called when the session is checked (on each page load)
     async session({ session, token }) {
-      // Attach token properties to the session object
       if (token) {
-        session.user.id = token.id;
-        session.user.email = token.email;
+        session.user = {
+          id: token.id,
+          email: token.email,
+        };
       }
       return session;
     },
   },
 
-//   pages: {
-//     signIn: "/api/login", // Optional: Custom sign-in page
-//   },
+  // Optional: Custom error or sign-in page
+  pages: {
+    signIn: "/login", // Define a custom sign-in page
+    error: "/error", // Custom error page (optional)
+  },
 };
 
 const handler = NextAuth(authOptions);

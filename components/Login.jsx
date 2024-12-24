@@ -20,7 +20,7 @@ const SignIn = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log(password);
     if (!username || !password) {
       alert("Please fill out all fields");
       return;
@@ -28,15 +28,22 @@ const SignIn = () => {
 
     const result = await signIn("credentials", {
       redirect: false, // Set to false to handle redirection manually
-      username,
+     email:username,
       password,
     });
 
     console.log(result);
 
     if (result?.error) {
-      alert("Invalid credentials. Please try again.");
-      console.error("Sign-in failed:", result.error);
+        if(result.error == "no user"){
+            alert("no such user");
+        }
+        else{
+            console.error("Sign-in failed:", result.error);
+            alert("Invalid credentials. Please try again.");
+            
+        }
+      
     } else {
       alert("You successfully logged in.");
       router.push("/dashboard"); // Redirect to dashboard after successful login
