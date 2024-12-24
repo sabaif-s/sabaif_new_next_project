@@ -4,7 +4,8 @@ import { signIn } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-
+import { toast } from "react-toastify";
+ 
 const SignIn = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -45,8 +46,18 @@ const SignIn = () => {
         }
       
     } else {
-      alert("You successfully logged in.");
-      router.push("/dashboard"); // Redirect to dashboard after successful login
+        toast.success("successfully logged in",{ position: "top-right",
+            autoClose: 8000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,});
+        setTimeout(() => {
+            // alert("You successfully logged in.");
+            router.push("/dashboard"); 
+        },  1500);
+      // Redirect to dashboard after successful login
     }
   };
 
