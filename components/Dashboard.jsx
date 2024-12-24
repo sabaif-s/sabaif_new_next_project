@@ -8,7 +8,8 @@ import { useSession } from 'next-auth/react';
 const Dashboard = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
-
+  console.log(session);
+  console.log(status);
   // Redirect unauthenticated users to the login page
   useEffect(() => {
     if (status === 'unauthenticated') {
