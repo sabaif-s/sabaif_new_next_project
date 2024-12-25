@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-
+import HomePage from "@/components/homepage/home";
 export default function Home() {
   const { data: session, status } = useSession();
 
@@ -15,7 +15,8 @@ export default function Home() {
     // User is authenticated
     return (
       <div>
-        <p>Welcome, {session.user?.email || "User"}!</p>
+         <HomePage first={"DASHBOARD"} second={false} />
+        {/* <p>Welcome, {session.user?.email || "User"}!</p>
         <ul>
           <li>
             <Link href="/dashboard" className="mr-10">
@@ -25,7 +26,7 @@ export default function Home() {
               Profile
             </Link>
           </li>
-        </ul>
+        </ul> */}
       </div>
     );
   }
@@ -33,7 +34,8 @@ export default function Home() {
   // User is unauthenticated
   return (
     <div>
-      <p>Please log in or register.</p>
+      <HomePage first={"LOGIN"} second={"REGISTER"} />
+      {/* <p>Please log in or register.</p>
       <ul>
         <li>
           <Link href="/register" className="mr-10">
@@ -43,7 +45,7 @@ export default function Home() {
             Login
           </Link>
         </li>
-      </ul>
+      </ul> */}
     </div>
   );
 }

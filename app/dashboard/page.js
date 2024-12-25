@@ -1,12 +1,12 @@
 "use client";
 import React from 'react'
-import Dashboard from '@/components/Dashboard'
- 
+// import Dashboard from '@/components/Dashboard'
+import DashBoard from '@/components/dashboard/dashboard';
 function  Dashboards() {
     
   return (
     <div>
-         <Dashboard/>
+         <DashBoard/>
     </div>
   )
 }
