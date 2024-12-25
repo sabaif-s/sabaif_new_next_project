@@ -32,14 +32,22 @@ const  DashBoard = () => {
       if(status == "authenticated"){
         return (
             <div className='w-full h-screen overflow-hidden bg-gray-300 flex flex-row rounded-lg' >
-                <div className="fixed top-4 left-28" >
+                <div className="fixed flex flex-row gap-x-4 top-4 left-20" >
                 <button
                 onClick={handleSignOut}
                 className="px-6 py-3 rounded-md bg-red-600 text-white font-medium text-lg tracking-wide shadow-md hover:bg-red-700 hover:shadow-lg transition duration-300 ease-in-out">
     Sign Out
 </button>
+<button
+                onClick={()=>{
+                    router.push('/');
+                }}
+                className="px-6 py-3 rounded-md bg-red-600 text-white font-medium text-lg tracking-wide shadow-md hover:bg-red-700 hover:shadow-lg transition duration-300 ease-in-out">
+    Home
+</button>
 
                 </div>
+                
                              <div className='w-1/4 h-full flex flex-col bg-gradient-to-t from-sky-950 via-sky-950 to-sky-800 py-20 px-10' >
                                         <div className='w-full  flex flex-col items-center gap-y-2'>
                                             <div className='w-full flex justify-center items-center' >

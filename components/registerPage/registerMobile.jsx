@@ -277,7 +277,7 @@ setUserNameError(false);
       <>
        {
         isClient && (
-          <div className={` ${isDesktop ? "":""} ${isMobile && !isLargeMobile ? "px-6 py-2":""} ${isLargeMobile ? "py-28 px-6":""}  min-h-screen bg-gradient-to-b from-blue-300 via-purple-200 to-gray-400 ${previewUrl == "" ? "":""} animate-slideLeft relative flex justify-center items-center `} >
+          <div className={` ${isDesktop ? "":""} ${isMobile && !isLargeMobile ? "px-6 py-2":""} ${isLargeMobile ? "py-28 px-6":""}  h-screen bg-gradient-to-b from-sky-950 via-sky-800 to-sky-400 ${previewUrl == "" ? "":""} overflow-hidden animate-fadeIn relative flex justify-center items-center `} >
           {
             !isDesktop && (
               <img  src={previewUrl == "" ? null:previewUrl} 
@@ -298,10 +298,10 @@ setUserNameError(false);
 
          
                  <div className={` ${isDesktopLarge ? "w-1/3 mt-10":""} ${isDesktop && !isDesktopLarge ? "w-2/3 mt-10":""} ${isTablet ? "w-2/3 mt-10":""} ${smallHeightMobile ? "mt-4 ":"mt-10"}  ${isMobile ? "w-full":""} h-full relative z-20  flex flex-col justify-start items-center ${smallHeightMobile ? "px-2":"px-4"}`} >
-                     <div className='w-1/2 bg-sky-100 h-10 relative rounded-t-twelve' >
+                     <div className='w-1/2 bg-gradient-to-b from-sky-200 to-sky-900 h-10 relative rounded-t-twelve' >
                         <img src={ previewUrl == ""? '/images/354177187_2e0ac7ad-ad85-46bb-babd-218399893e7b.jpg':previewUrl} className='w-20 max-h-24 shadow-2xl absolute left-6 -top-6 border-8 border-blue-400' alt="" />
                      </div>
-                     <div className={` ${smallHeightMobile ? "gap-y-4":"gap-y-6 h-full"} w-full bg-sky-100 pt-8 flex flex-col px-6`} >
+                     <div className={` ${smallHeightMobile ? "gap-y-4":"gap-y-6 h-full"} w-full bg-gradient-to-b from-sky-400 to-sky-900 pt-8 flex flex-col px-6`} >
                         <div className=' w-full h-16 justify-between shadow-xl items-center flex gap-x-2' >
                             <div className={` ${userNameError ? "border-red-400 border-4":"border-2 border-blue-200"} relative w-1/2 rounded-lg h-full flex justify-center items-center bg-white text-gray-600`} >
                               <img src="/images/user.png" className='w-5 h-5 absolute left-0' alt="" />
