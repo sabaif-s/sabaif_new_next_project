@@ -1,11 +1,61 @@
 import React,{useState,useEffect} from 'react';
+import { signIn } from 'next-auth/react';
+import { toast } from 'react-toastify';
 import Image from 'next/image';
+import { Input } from 'postcss';
 const SignInPage = () => {
     const [start,setStart]=useState(false);
+    const [email,setEmail]=useState("");
+    const [password,setPassword]=useState("");
+    
+    const [showInput,setShowInput]=useState(false);
     console.log(start);
     useEffect(()=>{
          console.log(start);
+         if(localStorage.getItem("signed") != null){
+          setEmail(localStorage.getItem("signed"));
+         }
     },[])
+      const handleSubmit = async () => {
+        
+        console.log(password);
+         
+    
+        const result = await signIn("credentials", {
+          redirect: false, // Set to false to handle redirection manually
+         email,
+          password,
+        });
+    
+        console.log(result);
+    
+        if (result?.error) {
+            if(result.error == "no user"){
+                 
+                toast.error("no such user");
+            }
+            else{
+                console.error("Sign-in failed:", result.error);
+                toast.error("Invalid Credentials. Please try again");
+                 
+                
+            }
+          
+        } else {
+            toast.success("successfully logged in",{ position: "top-right",
+                autoClose: 8000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,});
+            setTimeout(() => {
+                // alert("You successfully logged in.");
+                router.push("/dashboard"); 
+            },  1500);
+          // Redirect to dashboard after successful login
+        }
+      };
     return (
         <div className='w-full h-screen overflow-hidden bg-gradient-to-r from-teal-900 via-teal-600 to-teal-700 pt-20 px-40 pb-28' >
                            <div className='w-full h-full bg-gray-500 flex flex-row shadow-2xl' >
@@ -45,27 +95,51 @@ const SignInPage = () => {
                                                   </div>
                                                   <div>
                                                     <span className='text-gray-600 font-semibold' >
-                                                    sebaifmuhammed33@gmail.com
+                                                    {email}
                                                     </span>
                                                     
                                                   </div>
                                                   </div>
                                                  
                                             </div>
-                                            <div className='w-full flex flex-row justify-start items-center gap-x-2' >
+                                            <div
+                                            onClick={()=>{
+                                              setShowInput(true);
+                                            }}
+                                            className='w-full flex flex-row justify-start items-center gap-x-2 cursor-pointer' >
                                                   <div className='w-2 h-12 bg-white' >
 
                                                   </div>
-                                                  <div className='flex flex-col justify-center pb-2' >
-                                                  <div className='' >
-                                                  <span className='text-gray-600 font-semibold' >
-                                                    Password
-                                                    </span>
-                                                  </div>
+                                                  <div className={` ${showInput ? "w-full h-12":""} pb-2 flex flex-col justify-center`} >
+                                                    {
+                                                      !showInput && (
+                                                        <div className='' >
+                                                        <span className='text-gray-600 font-semibold tracking-wider' >
+                                                          Password
+                                                          </span>
+                                                        </div>
+                                                      )
+                                                    }
+                                                 
                                                   <div>
-                                                  <span className='text-gray-600 font-semibold' >
-                                                    ************
-                                                    </span>
+                                                    {
+                                                      showInput && (
+                                                        <input type="password" 
+                                                        onChange={(e)=>{
+                                                                setPassword(e.target.value);
+                                                        }}
+                                                        value={password}
+                                                        className='text-gray-500 font-semibold bg-gradient-to-r from-gray-700 to-gray-500  w-full h-12 pl-6 text-2xl focus:none tracking-widest' name="" placeholder='password' id="" />
+                                                      )
+                                                    }
+                                                    {
+                                                      !showInput && (
+                                                        <span className='text-gray-600 font-semibold' >
+                                                        ************
+                                                        </span>
+                                                      )
+                                                    }
+                                                 
                                                   </div>
                                                   </div>
                                                  
@@ -73,7 +147,7 @@ const SignInPage = () => {
                                        </div>
                                        <div className='w-full mt-6 flex justify-between items-center' >
                                                <div className='flex justify-start gap-x-2' >
-                                                 <div className='border-2 border-gray-300 w-6 h-6 bg-white' >
+                                                 <div className='border-2 border-gray-300 w-6 h-6 bg-white cursor-pointer' >
 
                                                  </div>
                                                  <div>
@@ -90,7 +164,9 @@ const SignInPage = () => {
                                        </div>
                                        <div className='w-full mt-6 flex justify-start items-center' >
                                                <div className='flex justify-start mr-4' >
-                                                   <button className='py-2 px-12 bg-gradient-to-r from-teal-900 to-teal-700' >
+                                                   <button
+                                                   onClick={handleSubmit}
+                                                   className='py-2 px-12 bg-gradient-to-r from-teal-900 to-teal-700' >
                                                                 <span className='text-white' >LOGIN</span>
                                                    </button>
                                                   

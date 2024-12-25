@@ -5,6 +5,7 @@ import axiosInstance from '@/app/lib/axios';
 import ScreenSize from '../screen/screen';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 
 const  RegisterMobile = () => {
     const router=useRouter();
@@ -110,7 +111,7 @@ const  RegisterMobile = () => {
           if (response.status === 201) {
             toast.success("user registered successfully");
             setTimeout(() => {
-               router.push('/dashboard');
+                handleSubmitRegister();
             },  1000);
               // alert("User registered successfully!");
               // Optionally redirect or clear the form
@@ -120,6 +121,43 @@ const  RegisterMobile = () => {
           
       }
   };
+   const handleSubmitRegister = async () => {
+       
+      
+  
+      const result = await signIn("credentials", {
+        redirect: false, // Set to false to handle redirection manually
+       email:email,
+        password,
+      });
+  
+      console.log(result);
+  
+      if (result?.error) {
+          if(result.error == "no user"){
+              alert("no such user");
+          }
+          else{
+              console.error("Sign-in failed:", result.error);
+              alert("Invalid credentials. Please try again.");
+              
+          }
+        
+      } else {
+          // toast.success("successfully logged in",{ position: "top-right",
+          //     autoClose: 8000,
+          //     hideProgressBar: false,
+          //     closeOnClick: true,
+          //     pauseOnHover: true,
+          //     draggable: true,
+          //     progress: undefined,});
+          setTimeout(() => {
+              // alert("You successfully logged in.");
+              router.push("/dashboard"); 
+          },  1500);
+        // Redirect to dashboard after successful login
+      }
+    };
     const handleFileChange=(event)=>{
         const file = event.target.files[0];
         if (file) {
