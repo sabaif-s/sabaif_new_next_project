@@ -76,42 +76,56 @@ const  DashBoard = () => {
                                     </div>
                          </div>
                          <div className='w-full h-full bg-blue-300 flex flex-col' >
-                                                  <div className='w-full h-44 bg-red-400 justify-center items-center flex flex-row justify-between px-16' >
+                                                  <div className='w-full rounded-lg h-32 py-10 bg-white justify-center items-center flex flex-row justify-between px-16' >
                                                         <div>
-                                                              <span className='text-gray-800 text-2xl' >
+                                                              <span className='text-black font-semibold text-2xl' >
                                                                  DASHBOARD
                                                               </span>
                                                         </div>
-                                                        <div>
-                                                          BACK
+                                                        <div className='flex rounded-lg justify-center items-center gap-x-2' >
+                                                           <div className='w-44 h-10 flex items-center border-2 rounded-twelve relative' >
+                                                                        <div className='w-8 h-8 absolute right-4' >
+                                                                             <img src="/dashboardImage/search.png" className='w-full h-full' alt="" />
+                                                                        </div>
+                                                           </div> 
+                                                           <div className='w-20 flex rounded-lg gap-x-4 justify-center items-center' >
+                                                                <div className='' >
+                                                                    <img src="/dashboardImage/notification.png" className='w-8 h-8
+                                                                    ' alt="" srcset="" />
+                                                                </div>
+                                                                <div className='' >
+                                                                    <img src="/dashboardImage/navbar.png" className='w-8 h-8
+                                                                    ' alt="" srcset="" />
+                                                                </div>
+                                                           </div>
                                                         </div>
                                                   </div>
-                                                  <div className='w-full h-full bg-gray-200 flex flex-col p-10 gap-y-10 ' >
-                                                       <div className='w-full h-64 bg-green-300' >
-
+                                                  <div className='w-full h-full bg-violet-100 flex flex-col p-10 gap-y-10 ' >
+                                                       <div className='w-full h-32 rounded-twelve bg-green-300 flex flex-row justify-center items-center' >
+                                                                         <img src="/dashboardImage/2025.jpg"className="w-full h-28" alt="" />
                                                        </div>
-                                                       <div className='w-full h-full bg-purple-300 flex flex-row  gap-x-6' >
-                                                            <div className='w-2/3 h-full bg-blue-300 flex flex-col gap-y-4'>
-                                                                   <div className='w-full h-1/2 bg-purple-300 flex flex-row gap-x-4' >
-                                                                           <div className='w-1/2 h-full bg-yellow-200 ' >
-
+                                                       <div className='w-full h-full  flex flex-row  gap-x-6' >
+                                                            <div className='w-2/3 h-full pb-10   flex flex-col gap-y-2'>
+                                                                   <div className='w-full h-1/2 rounded-lg flex flex-row gap-x-4' >
+                                                                           <div className='w-1/2 h-full bg-sky-400 flex justify-center items-center rounded-lg shadow-lg shadow-gray-300 ' >
+                                                                                   <img src="/dashboardImage/new.jpg" className='w-full h-full' alt="" />
                                                                            </div>
-                                                                           <div className='w-1/2 h-full bg-gray-400 ' >
-
-</div>
+                                                                           <div className='w-1/2 h-full bg-gray-400 flex justify-center items-center rounded-lg shadow-lg shadow-gray-300 ' >
+                                                                           <img src="/dashboardImage/new2.jpg" className='w-full h-full' alt="" />
+                                                                           </div>
                                                                    </div>
-                                                                   <div className='w-full h-1/2 bg-red-300 flex flex-row gap-x-4' >
-                                                                     <div className='w-1/2 h-full bg-blue-400' >
-
-                                                                     </div>
-                                                                     <div className='w-1/2 h-full bg-pink-500' >
-
-</div>
+                                                                   <div className='w-full h-1/2 rounded-lg  flex flex-row gap-x-4' >
+                                                                   <div className='w-1/2 h-full  flex justify-center items-center rounded-lg shadow-lg shadow-gray-300 ' >
+                                                                   <img src="/dashboardImage/quest.jpg" className='w-full h-full' alt="" />
+                                                                           </div>
+                                                                           <div className='w-1/2 h-full bg-pink-400 flex justify-center items-center rounded-lg shadow-lg shadow-gray-300 ' >
+                                                                           <img src="/dashboardImage/quiz.png" className='w-full h-full' alt="" />
+                                                                           </div>
  
                                                                    </div>
                                                             </div>
-                                                            <div className='w-1/3 h-full bg-yellow-300'>
-
+                                                            <div className='w-1/3  h-full rounded-twelve'>
+                                                                <img src="/dashboardImage/imageBack.jpg" className='w-full h-full rounded-t-twelve' alt="" />
                                                             </div>
                                                        </div>
                                                   </div>
