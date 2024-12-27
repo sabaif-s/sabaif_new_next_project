@@ -2,17 +2,36 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import homeImage from '@/public/dashboardImage/home.jpg';
+import houseImage from '@/public/dashboardImage/homeMobile.jpg'
+import ScreenSize from '../screen/screen';
 import Image from 'next/image';
 const  HomePage = ({first,second}) => {
+    const {isDesktop}=ScreenSize();
     const router=useRouter();
     return (
         <div className='w-full h-screen overflow-hidden flex flex-row justify-center items-center gap-x-4 ' >
-            <Image
-            layout='fill'
-            objectFit='cover'
-            placeholder="blur"
+            {
+                isDesktop && (
+                    <Image
+                    layout='fill'
+                    objectFit='cover'
+                    placeholder="blur"
+        
+                    src={homeImage} className='absolute z-0' />
+                )
+            }
+              {
+                !isDesktop && (
+                    <Image
+                    layout='fill'
+                    objectFit='cover'
+                    placeholder="blur"
+        
+                    src={houseImage} className='absolute z-0' />
+                )
+            }
 
-            src={homeImage} className='absolute z-0' />
+           
 
              
                  {/* <img src='/dashboardImage/home.jpg' className='w-full h-full rounded-lg absolute z-0' /> */}
