@@ -3,13 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import HomePage from "@/components/homepage/home";
+import { useEffect,useState } from "react";
 export default function Home() {
   const { data: session, status } = useSession();
-
-  if (status === "loading") {
-    // Handle loading state
-    return <p>Loading...</p>;
-  }
+  const [isAuthenticated,setIsAuthenticated]=useState(false)
+  //  if (status === "loading") {
+  //   // Handle loading state
+  //   return <p>Loading...</p>;
+  // }
 
   if (status === "authenticated") {
     // User is authenticated
@@ -32,20 +33,23 @@ export default function Home() {
   }
 
   // User is unauthenticated
-  return (
-    <div>
-      <HomePage first={"LOGIN"} second={"REGISTER"} />
-      {/* <p>Please log in or register.</p>
-      <ul>
-        <li>
-          <Link href="/register" className="mr-10">
-            Register
-          </Link>
-          <Link href="/login" className="mr-10">
-            Login
-          </Link>
-        </li>
-      </ul> */}
-    </div>
-  );
+  if(status == "unauthenticated"){
+    return (
+      <div>
+        <HomePage first={"LOGIN"} second={"REGISTER"} />
+        {/* <p>Please log in or register.</p>
+        <ul>
+          <li>
+            <Link href="/register" className="mr-10">
+              Register
+            </Link>
+            <Link href="/login" className="mr-10">
+              Login
+            </Link>
+          </li>
+        </ul> */}
+      </div>
+    );
+  }
+  
 }

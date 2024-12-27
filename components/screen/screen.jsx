@@ -10,6 +10,7 @@ const ScreenSize = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isLargeMobile, setIsLargeMobile] = useState(false);
   const [smallHeightMobile, setSmallHeightMobile] = useState(false);
+  const [smallWidthMobile,setSmallWidthMobile]=useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -19,6 +20,7 @@ const ScreenSize = () => {
       setIsMobile(window.innerWidth <= 767);
       setIsLargeMobile(window.innerHeight >= 700);
       setSmallHeightMobile(window.innerHeight <= 680);
+      setSmallWidthMobile(window.innerWidth <= 400);
     };
 
     // Initial check
@@ -31,7 +33,7 @@ const ScreenSize = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []); // Empty dependency array to run only once on mount
 
-  return { isDesktop, isDesktopLarge, isMobile, isTablet, isLargeMobile, smallHeightMobile };
+  return { isDesktop, isDesktopLarge, isMobile, isTablet, isLargeMobile, smallHeightMobile ,smallWidthMobile};
 };
 
 export default ScreenSize;

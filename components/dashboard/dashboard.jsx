@@ -10,8 +10,11 @@ const  DashBoard = () => {
       console.log(status);
       // Redirect unauthenticated users to the login page
       useEffect(() => {
-        if (status === 'unauthenticated') {
+        if (status === 'unauthenticated' && localStorage.getItem("signed") != null) {
           router.replace('/login'); // Redirect to login page
+        }
+        if(status === 'unauthenticated' && localStorage.getItem("signed") == null){
+            router.replace('/register');
         }
       }, [status, router]);
     

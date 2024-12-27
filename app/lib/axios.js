@@ -5,7 +5,7 @@ const axiosInstance = axios.create({
   baseURL: "http://localhost:3000", // Set your base URL
   timeout: 10000,  // Optional: set a timeout for requests
   headers: {
-    'Content-Type': 'application/json',
+    // 'Content-Type': 'application/json',
     // Add any additional default headers here
   },
 });
@@ -24,15 +24,15 @@ const axiosInstance = axios.create({
 // );
 
 // Response interceptor (optional, e.g., for handling errors globally)
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    // Handle errors globally here (e.g., token expiration)
-    if (error.response.status === 401) {
-      // Redirect to login or handle token expiry logic
-    }
-    return Promise.reject(error);
-  }
-);
+// axiosInstance.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     // Handle errors globally here (e.g., token expiration)
+//     if (error.response.status === 401) {
+//       // Redirect to login or handle token expiry logic
+//     }
+//     return Promise.reject(error);
+//   }
+// );
 
 export default axiosInstance;
