@@ -6,6 +6,7 @@ import ScreenSize from '../screen/screen';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
+import axios from 'axios';
 
 const  RegisterMobile = () => {
     const router=useRouter();
@@ -34,6 +35,7 @@ const  RegisterMobile = () => {
     const [generatedFile,setGeneratedFile]=useState(null);
     const [newWidth,setNewWidth]=useState(0);
     const [newHeight,setNewHeight]=useState(0);
+    const [fileImage,setFileImage]=useState(null);
     useEffect(()=>{
         console.log(metadata);
         const width=metadata.width;
@@ -163,6 +165,7 @@ const  RegisterMobile = () => {
         const file = event.target.files[0];
         if (file) {
           const url = URL.createObjectURL(file);
+          setFileImage(file);
           setGeneratedFile(url);
           setGenerateMetaData(true);
           
@@ -172,9 +175,23 @@ const  RegisterMobile = () => {
         }
         return () => URL.revokeObjectURL(url);
     }
+    const handleSubmitNew=async()=>{
+      try{ 
+        const formData = new FormData();
+        formData.append('file',fileImage);
+        formData.append('title','sabaif');
+        const response=await axiosInstance.post('/api/upload',formData);
+        console.log(response);
+
+
+      }catch(error){
+        console.log(error);
+      }
+    }
     const onSubmit = (data) => {
         console.log('Form submitted successfully:', data);
-        handleSubmitServer();
+        // handleSubmitServer();
+        handleSubmitNew();
         // reset();
       };
       const oninvalid=(error)=>{
