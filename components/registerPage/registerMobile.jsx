@@ -153,6 +153,7 @@ const  RegisterMobile = () => {
           //     progress: undefined,});
           setTimeout(() => {
               // alert("You successfully logged in.");
+              localStorage.setItem("signed",email);
               router.push("/dashboard"); 
           },  1500);
         // Redirect to dashboard after successful login
