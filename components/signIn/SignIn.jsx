@@ -83,10 +83,10 @@ const SignInPage = () => {
       };
       if (readyRender){
         return (
-          <div className={`w-full h-screen animate-fadeIn ${smallWidthMobile ? "py-2":""} ${smallHeightMobile ? "px-2 py-2":""} ${isLargeMobile ? "p-4":""} ${isTablet ? "p-16":""}  ${isDesktop ? " pt-20 px-40 pb-28":""} overflow-hidden bg-gradient-to-r from-teal-900 via-teal-600 to-teal-700 `} >
+          <div className={`w-full h-screen animate-fadeIn ${smallWidthMobile ? "py-2":""} ${smallHeightMobile ? "px-2 py-2":""} ${isLargeMobile ? "p-4":""} ${isTablet ? "px-20 py-4":""} ${isDesktopLarge ? "pt-20 px-40 pb-28":''}  ${isDesktop ? " pt-10 px-8 pb-10":""} overflow-hidden bg-gradient-to-r from-teal-900 via-teal-600 to-teal-700 `} >
                              <div className={`w-full h-full bg-gray-500 ${isDesktop ? "flex-row":"flex-col"} flex shadow-2xl`} >
-                               <div className={` ${smallHeightMobile ? "p-4":""} ${isDesktopLarge ? "pt-4 pl-12 pr-16 pb-16 basis-1/2":""} ${isLargeMobile ? "p-4 w-full":""} ${isTablet ? "p-8 w-full":""}  h-full bg-white `} >
-                                      <div className={` ${smallWidthMobile ? "gap-y-0":""}  ${smallHeightMobile ? "gap-y-2":""} ${isLargeMobile ? "gap-y-8":""} w-full h-full flex flex-col overflow-y-auto`} >
+                               <div className={` ${smallHeightMobile ? "p-4":""} ${isDesktop ? "pt-4 pl-12 pr-10 pb-16 basis-1/2":""} ${isLargeMobile ? "p-4 w-full":""} ${isTablet ? "py-2 px-10 w-full":""}  h-full bg-white `} >
+                                      <div className={` ${smallWidthMobile ? "gap-y-0":""}  ${smallHeightMobile ? "gap-y-2":""} ${isLargeMobile ? "gap-y-8":""} ${isTablet ? "px-20":""} w-full h-full flex flex-col overflow-y-auto`} >
                                          <div className='flex flex-row justify-start items-center gap-x-4' >
                                             <div className={` ${smallWidthMobile ? "h-32":"h-36"} w-14  bg-gradient-to-b from-teal-900 via-teal-900 to-teal-700 `} >
   
