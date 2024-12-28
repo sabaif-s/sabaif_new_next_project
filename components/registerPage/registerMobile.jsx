@@ -89,40 +89,7 @@ const  RegisterMobile = () => {
             generateImageMeta(generatedFile);
           }
     },[generatedFile,generateMetadata]);
-    const handleSubmitServer = async () => {
-      // Basic client-side validation
-      if ( !watchUserName || !email || !password ) {
-          // setError("All fields are required.");
-          alert("error")
-          return;
-      }
-
-      if (password !== confirmPass) {
-          // setError("Passwords do not match.");
-          return;
-      }
-
-      try {
-          // Send a POST request to the API using the axios instance
-          const response = await axiosInstance.post('/api/register', {
-              username: watchUserName,
-              email: email,
-              password: password,
-          });
-
-          if (response.status === 201) {
-            toast.success("user registered successfully");
-            setTimeout(() => {
-                handleSubmitRegister();
-            },  1000);
-              // alert("User registered successfully!");
-              // Optionally redirect or clear the form
-          }
-      } catch (error) {
-        toast.error(error.response?.data?.message || "Something went wrong");
-          
-      }
-  };
+    
    const handleSubmitRegister = async () => {
        
       
@@ -146,13 +113,7 @@ const  RegisterMobile = () => {
           }
         
       } else {
-          // toast.success("successfully logged in",{ position: "top-right",
-          //     autoClose: 8000,
-          //     hideProgressBar: false,
-          //     closeOnClick: true,
-          //     pauseOnHover: true,
-          //     draggable: true,
-          //     progress: undefined,});
+         
           setTimeout(() => {
               // alert("You successfully logged in.");
               localStorage.setItem("signed",email);
@@ -176,21 +137,44 @@ const  RegisterMobile = () => {
         return () => URL.revokeObjectURL(url);
     }
     const handleSubmitNew=async()=>{
-      try{ 
-        const formData = new FormData();
-        formData.append('file',fileImage);
-        formData.append('title','sabaif');
-        const response=await axiosInstance.post('/api/upload',formData);
-        console.log(response);
-
-
-      }catch(error){
-        console.log(error);
+      const form = new FormData();
+      form.set("file", fileImage);
+      form.append('username',watchUserName);
+      form.append('email',email);
+      form.append('password',password);
+      form.append('phone',phone);
+      
+      
+      try {
+        // `/api/upload` is the route of the upload handler
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: form,
+          headers: {
+            // Add token if required (e.g., Authorization: `Bearer ${token}`)
+            // Content-Type is automatically set to multipart/form-data for FormData
+          },
+        });
+      
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+      
+        const data = await res.json();
+        toast.success("user registered successfully");
+        console.log(data.imgUrl);
+        setTimeout(() => {
+            handleSubmitRegister();
+        },  1000);
+        // Log the uploaded image URL received from the API
+        
+      } catch (error) {
+        console.error("Error uploading file:", error.message);
       }
     }
     const onSubmit = (data) => {
         console.log('Form submitted successfully:', data);
-        // handleSubmitServer();
+         
         handleSubmitNew();
         // reset();
       };

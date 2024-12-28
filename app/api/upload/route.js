@@ -1,51 +1,70 @@
-import { NextResponse } from 'next/server';
-import cloudinary from 'cloudinary';
-import formidable from 'formidable';
+import { uploadToCloudinary } from "@/app/lib/uploadCloudinary"; // Adjust the import path if needed
+import { NextResponse } from "next/server";
+import User from "@/models/user";
+import bcrypt from "bcrypt";
 
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.CLOUD_API_KEY,
-  api_secret: process.env.CLOUD_SECRET_CODE,
-});
-
-// Disable body parsing for file uploads
-export const config = {
-  api: {
-    bodyParser: false,
-  },
+// Save user data to the database
+const SaveToDatabase = async (formData, imgUrl) => {
+  try {
+     const hashedPassword = await bcrypt.hash(formData.get('password'), 2);
+    const user = await User.create({
+      email: formData.get("email"),
+      username: formData.get("username"),
+      password: hashedPassword,
+      imageUrl: imgUrl,
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Error saving to database:", error);
+    return { success: false, error: error.message };
+  }
 };
 
 export async function POST(req) {
-  const form = formidable({ multiples: true }); // Updated to create a new instance
-   const formData=await req.formData();
-   console.log(formData);
-  return new Promise((resolve, reject) => {
-    form.parse(req, async (err, fields, files) => {
-      if (err) {
-        console.log("error:",err);
-        return reject(NextResponse.json({ error: 'Failed to parse the file' }, { status: 500 }));
+  try {
+    // Authentication check (if required)
+
+    // Parse form data
+    const formData = await req.formData();
+    const file = formData.get("file");
+
+    if (!file) {
+      return NextResponse.json({ message: "No file provided" }, { status: 400 });
+    }
+
+    // Convert the file to a base64 URI
+    const fileBuffer = await file.arrayBuffer();
+    const mimeType = file.type;
+    const encoding = "base64";
+    const base64Data = Buffer.from(fileBuffer).toString("base64");
+    const fileUri = `data:${mimeType};${encoding},${base64Data}`;
+
+    // Upload the file to Cloudinary
+    const res = await uploadToCloudinary(fileUri, file.name);
+
+    if (res.success && res.result) {
+      // Save form data and uploaded image URL to the database
+      const dbResponse = await SaveToDatabase(formData, res.result.secure_url);
+      
+      if (dbResponse.success) {
+        return NextResponse.json({
+          message: "success",
+          imgUrl: res.result.secure_url,
+        });
+      } else {
+        return NextResponse.json(
+          { message: "Database save failed", error: dbResponse.error },
+          { status: 500 }
+        );
       }
-
-      try {
-        // Upload image to Cloudinary
-        const result = await cloudinary.v2.uploader.upload("saboo.jpg");
-        
-        // Prepare data to save in the database
-        const metadata = {
-          imageUrl: result.secure_url,
-          public_id: result.public_id,
-          ...fields, // Include other fields from the form
-        };
-
-        // Log metadata
-        console.log(metadata);
-
-        // Respond with the URL and any other necessary data
-        resolve(NextResponse.json({ url: result.secure_url, metadata },{status:201}));
-      } catch (err) {
-        console.log("error in bottom:",err);
-        reject(NextResponse.json({ error: 'Upload failed', details: err }, { status: 500 }));
-      }
-    });
-  });
+    } else {
+      return NextResponse.json({ message: "File upload failed" }, { status: 500 });
+    }
+  } catch (error) {
+    console.error("Error occurred:", error);
+    return NextResponse.json(
+      { message: "An error occurred", error: error.message },
+      { status: 500 }
+    );
+  }
 }
