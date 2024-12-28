@@ -1,52 +1,41 @@
-import { NextResponse } from 'next/server';
-import cloudinary from 'cloudinary';
-import formidable from 'formidable';
+import {uploadToCloudinary} from "@/app/lib/uploadCloudinary"; // Adjust the import path if needed
+import { NextResponse } from "next/server";
 
+export async function POST(req) {
+  try {
+    // Perform your authentication check here if required
 
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.CLOUD_API_KEY,
-  api_secret: process.env.CLOUD_SECRET_CODE,
-});
+    const formData = await req.formData();
+    const file = formData.get("file");
+    console.log("form data:",formData);
 
-// Disable body parsing for file uploads
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
-export async function POST(request) {
-  const formData = await request.formData();
-  const file = formData.get('file');
-
-  if (file instanceof File) {
-    const arrayBuffer = await file.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
-
-    try {
-      const cloudinaryResponse = await cloudinary.uploader.upload_stream({ resource_type: 'auto' }, (error, result) => {
-        if (error) {
-          console.error('Cloudinary upload error:', error);
-          return NextResponse.error(new Error('no file '));
-        }
-        console.log("Cloudinary response:", result);
-        // return NextResponse.error(new Error('no file '));
-        return new Response(JSON.stringify(result), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        });
-      });
-
-      // Pipe the Uint8Array to the Cloudinary upload stream
-      const stream = cloudinary.uploader.upload_stream({ resource_type: 'auto' });
-      stream.end(uint8Array);
-
-    } catch (error) {
-      console.error("Error uploading to Cloudinary:", error);
-      return NextResponse.error(new Error('no file '));
+    if (!file) {
+      return NextResponse.json({ message: "No file provided" }, { status: 400 });
     }
-  } else {
-    return NextResponse.error(new Error('no file '));
+
+    const fileBuffer = await file.arrayBuffer();
+    const mimeType = file.type;
+    const encoding = "base64";
+    const base64Data = Buffer.from(fileBuffer).toString("base64");
+
+    // Construct the file URI for uploading
+    const fileUri = `data:${mimeType};${encoding},${base64Data}`;
+
+    // Upload the file to Cloudinary
+    const res = await uploadToCloudinary(fileUri, file.name);
+
+    if (res.success && res.result) {
+      return NextResponse.json({
+        message: "success",
+        imgUrl: res.result.secure_url,
+      });
+    } else {
+      return NextResponse.json({ message: "failure" }, { status: 500 });
+    }
+  } catch (error) {
+    return NextResponse.json(
+      { message: "An error occurred", error: error.message },
+      { status: 500 }
+    );
   }
 }

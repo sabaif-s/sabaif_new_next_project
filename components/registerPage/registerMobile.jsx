@@ -176,16 +176,30 @@ const  RegisterMobile = () => {
         return () => URL.revokeObjectURL(url);
     }
     const handleSubmitNew=async()=>{
-      try{ 
-        const formData = new FormData();
-        formData.append('file',fileImage);
-        formData.append('title','sabaif');
-        const response=await axiosInstance.post('/api/upload',formData);
-        console.log(response);
-
-
-      }catch(error){
-        console.log(error);
+      const form = new FormData();
+      form.set("file", fileImage);
+      
+      try {
+        // `/api/upload` is the route of the upload handler
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: form,
+          headers: {
+            // Add token if required (e.g., Authorization: `Bearer ${token}`)
+            // Content-Type is automatically set to multipart/form-data for FormData
+          },
+        });
+      
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+      
+        const data = await res.json();
+      
+        // Log the uploaded image URL received from the API
+        console.log(data.imgUrl);
+      } catch (error) {
+        console.error("Error uploading file:", error.message);
       }
     }
     const onSubmit = (data) => {
