@@ -1,11 +1,13 @@
 import { signOut } from "next-auth/react";
-import React,{useEffect} from 'react';
+import React,{useEffect,useState} from 'react';
 import { useRouter } from "next/navigation";
 import { useSession } from 'next-auth/react';
 
 const  DashBoard = () => {
      const router = useRouter();
       const { data: session, status } = useSession();
+      const [userName,setUserName]=useState("");
+      const [imageUrl,setImageUrl]=useState("");
       console.log(session);
       console.log(status);
       // Redirect unauthenticated users to the login page
@@ -17,6 +19,36 @@ const  DashBoard = () => {
             router.replace('/register');
         }
       }, [status, router]);
+      useEffect(()=>{
+        const fetchData = async (email)=>{
+            try {
+                const res = await fetch(`/api/dashboard/${email}`,{
+                    method:'GET',
+                    
+                })
+                  const data= await res.json();
+                  console.log(data);
+                    if(res.status === 200){
+                        console.log(data);
+                        setUserName(data.user.username);
+                        setImageUrl(data.user.imageUrl);
+                    }
+                    else{
+                        console.log('error in finding user');
+                    }
+            } catch (error) {
+                 console.log(error);
+            }
+        }
+        if(status === 'authenticated'){
+            const email = session.user.email;
+            if(email){
+                fetchData(email);
+            }
+        }
+        
+       
+      },[session,status]);
     
       const handleSignOut = () => {
         localStorage.setItem("signed",session.user.email);
@@ -54,11 +86,11 @@ const  DashBoard = () => {
                              <div className='w-1/4 h-full flex flex-col bg-gradient-to-t from-sky-950 via-sky-950 to-sky-800 py-20 px-10' >
                                         <div className='w-full  flex flex-col items-center gap-y-2'>
                                             <div className='w-full flex justify-center items-center' >
-                                                <img src="dashboardImage/profile image.jpg" className='w-40 h-40 rounded-full' alt="" />
+                                                <img src={imageUrl} className='w-40 h-40 rounded-full' alt="" />
                                             </div>
                                             <div className='w-full h-10 flex flex-row justify-center items-center' >
                                                 <span className='text-2xl text-white' >
-                                                    SEBAIF MUHAMMED
+                                                    {userName}
                                                 </span>
                                             </div>
                                             <div className='w-1/2  h-2 rounded bg-white relative z-50' >

@@ -28,6 +28,11 @@ const User = sequelize.define('User', {
     unique: false,      // Ensure username is unique
     
   },
+  imageUrl:{
+    type:DataTypes.STRING,
+    allowNull:false,
+    unique:true
+  }
 },
 
  {
