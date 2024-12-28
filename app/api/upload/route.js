@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import cloudinary from 'cloudinary';
 import formidable from 'formidable';
 
+
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUD_API_KEY,
@@ -15,37 +16,37 @@ export const config = {
   },
 };
 
-export async function POST(req) {
-  const form = formidable({ multiples: true }); // Updated to create a new instance
-   const formData=await req.formData();
-   console.log(formData);
-  return new Promise((resolve, reject) => {
-    form.parse(req, async (err, fields, files) => {
-      if (err) {
-        console.log("error:",err);
-        return reject(NextResponse.json({ error: 'Failed to parse the file' }, { status: 500 }));
-      }
+export async function POST(request) {
+  const formData = await request.formData();
+  const file = formData.get('file');
 
-      try {
-        // Upload image to Cloudinary
-        const result = await cloudinary.v2.uploader.upload("saboo.jpg");
-        
-        // Prepare data to save in the database
-        const metadata = {
-          imageUrl: result.secure_url,
-          public_id: result.public_id,
-          ...fields, // Include other fields from the form
-        };
+  if (file instanceof File) {
+    const arrayBuffer = await file.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
 
-        // Log metadata
-        console.log(metadata);
+    try {
+      const cloudinaryResponse = await cloudinary.uploader.upload_stream({ resource_type: 'auto' }, (error, result) => {
+        if (error) {
+          console.error('Cloudinary upload error:', error);
+          return NextResponse.error(new Error('no file '));
+        }
+        console.log("Cloudinary response:", result);
+        // return NextResponse.error(new Error('no file '));
+        return new Response(JSON.stringify(result), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      });
 
-        // Respond with the URL and any other necessary data
-        resolve(NextResponse.json({ url: result.secure_url, metadata },{status:201}));
-      } catch (err) {
-        console.log("error in bottom:",err);
-        reject(NextResponse.json({ error: 'Upload failed', details: err }, { status: 500 }));
-      }
-    });
-  });
+      // Pipe the Uint8Array to the Cloudinary upload stream
+      const stream = cloudinary.uploader.upload_stream({ resource_type: 'auto' });
+      stream.end(uint8Array);
+
+    } catch (error) {
+      console.error("Error uploading to Cloudinary:", error);
+      return NextResponse.error(new Error('no file '));
+    }
+  } else {
+    return NextResponse.error(new Error('no file '));
+  }
 }
