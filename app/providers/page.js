@@ -4,20 +4,43 @@ import { useRouter } from "next/navigation";
 import {useState,useEffect} from "react";
 import {toast} from "react-toastify";
 import { useSession } from "next-auth/react";
+ 
 
 
 
 export default function SignInPage() {
   // Handle the click for each provider
   const router=useRouter();
+   
+ 
   const {data:session,status}=useSession();
   const [error,setError]=useState(null);
-  const handleProviderSignIn = (provider) => {
-    signIn(provider);  // Adjust the redirect URL as needed
+  const handleProviderSignIn = async (provider) => {
+   const response =await signIn(provider);
+    console.log("response",response);
+   
   };
   useEffect(()=>{
-       router.push("/providers");
+      //  router.push("/providers");
+      console.log(router.query);
+      const params = new URLSearchParams(window.location.search);
+
+// Get the 'callbackUrl' parameter
+const callbackUrl = params.get("callbackUrl");
+console.log("Callback URL:", callbackUrl); 
+      console.log(window.location.pathname);
+      console.log(window.location.search);
+      const searchUrl=window.location.search;
+      if(searchUrl.includes("error")){
+        toast.error("An error occurred");
+      }
+       
+      console.log(window.location.ancestorOrigins);
   },[]);
+//   useEffect(()=>{
+//      console.log("redirectFrom",redirectFrom);
+// },[redirectFrom]);
+
   console.log(session,status);
   const handleSubmit=async (e)=>{
 

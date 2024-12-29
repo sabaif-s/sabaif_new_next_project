@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 const SaveToDatabase = async (formData, imgUrl) => {
   try {
      const hashedPassword = await bcrypt.hash(formData.get('password'), 2);
+    
     const user = await User.create({
       email: formData.get("email"),
       username: formData.get("username"),
@@ -71,7 +72,10 @@ export async function POST(req) {
     const encoding = "base64";
     const base64Data = Buffer.from(fileBuffer).toString("base64");
     const fileUri = `data:${mimeType};${encoding},${base64Data}`;
-
+    const prevUser= await User.findOne({ where: { email: formData.get('email') } });
+    if(prevUser){
+       return NextResponse.json({ message: "User already exists" }, { status: 200 });
+    }
     // Upload the file to Cloudinary
     const res = await uploadToCloudinary(fileUri, file.name);
 

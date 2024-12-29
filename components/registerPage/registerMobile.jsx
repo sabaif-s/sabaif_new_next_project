@@ -6,7 +6,7 @@ import ScreenSize from '../screen/screen';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import axios from 'axios';
+ 
 
 const  RegisterMobile = () => {
     const router=useRouter();

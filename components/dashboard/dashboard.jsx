@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from 'next-auth/react';
 import ScreenSize from "../screen/screen";
 import Image from "next/image";
+
 const  DashBoard = () => {
      const router = useRouter();
       const { data: session, status } = useSession();
@@ -13,6 +14,9 @@ const  DashBoard = () => {
       const [showNav,setShowNav]=useState(false);
       const [showOut,setShowOut]=useState(false);
       const [hideNav,setHideNav]=useState(true);
+      const [accessToken,setAccessToken]=useState("");
+      const [profileImage,setProfileImage]=useState("");
+       
       console.log(session);
       console.log(status);
       // Redirect unauthenticated users to the login page
@@ -24,6 +28,27 @@ const  DashBoard = () => {
             router.replace('/register');
         }
       }, [status, router]);
+    useEffect(() => {
+        const fetchFacebookProfileImage = async (accessToken) => {
+            try {
+                const response = await fetch(`https://graph.facebook.com/me/picture?access_token=${accessToken}&type=large&redirect=false`);
+                const data = await response.json();
+                if (data && data.data && data.data.url) {
+                    console.log('Facebook profile image:', data.data.url);
+                    setProfileImage(data.data.url);
+                } else {
+                    console.log('Error fetching Facebook profile image');
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        if (accessToken) {
+            fetchFacebookProfileImage(accessToken);
+        }
+    }, [accessToken]);
+
       useEffect(()=>{
         const fetchData = async (email)=>{
             try {
@@ -47,6 +72,9 @@ const  DashBoard = () => {
         }
         if(status === 'authenticated'){
             const email = session.user.email;
+            setAccessToken(session.accessToken);
+            const provider=session.provider;
+            localStorage.setItem("provider",provider);
             if(email){
                 fetchData(email);
             }
@@ -91,19 +119,17 @@ const  DashBoard = () => {
                              <div className={` ${showOut ? "animate-fadeOut":""} ${hideNav && isMobile ? "hidden":"animate-slideRight"} ${isMobile || isTablet ? "absolute left-0 z-50":""} ${showNav == isMobile ? "animate-slideRight":""} ${showNav == isTablet ? "animate-slideRight":''}  ${isDesktop ? "w-1/3":""} ${isDesktopLarge ? "w-1/4":""} h-full flex flex-col justify-center bg-gradient-to-t from-sky-950 via-sky-950 to-sky-800 py-20 px-10`} >
                                         <div className='w-full  flex flex-col items-center gap-y-2'>
                                             <div className='w-full flex justify-center items-center' style={{height:"200px"}}  >
-                                                {
-                                                    imageUrl != "" && (
-                                                        <div className="relative w-full" style={{height:"160px"}}>
-      <Image
-        src={imageUrl}
-        alt="Profile Picture"
-        layout="fill" // This makes the image fill the container
-        objectFit="cover" // Ensures the image covers the container while maintaining aspect ratio
-        className="rounded-full"
-      />
-    </div>
-                                                    )
-                                                }
+                                            {imageUrl && (
+  <div className="relative w-full" style={{ height: "160px" }}>
+    <Image
+      src={profileImage || imageUrl}
+      alt="Profile Picture"
+      layout="fill" // Makes the image fill the container
+      objectFit="cover" // Ensures the image covers the container while maintaining aspect ratio
+      className="rounded-full"
+    />
+  </div>
+)}
                                                
                                                 {/* <img src={imageUrl} className='w-40 h-40 rounded-full' alt="" /> */}
                                             </div>

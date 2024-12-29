@@ -56,7 +56,7 @@ const  HomePage = ({first,second}) => {
                      onClick={()=>{
                         if(first == "LOGIN"){
                             const signed=localStorage.getItem("signed");
-                            if(signed){
+                            if(signed && localStorage.getItem('provider') == "credentials"){
                                 router.push("/login");
                             }
                             else{
