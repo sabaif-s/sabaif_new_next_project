@@ -11,14 +11,14 @@ export default function Login() {
 useEffect(()=>{
     const handleFacebookSignIn = async () => {
         try {
-          const result = await signIn("facebook", { redirect: true }); // Prevent automatic redirect
+          const result = await signIn("facebook"); // Prevent automatic redirect
             console.log(result);
           if (result?.error) {
             // If there is an error in the result, set it
             setError(result.error);
           } else if (result?.ok) {
             // Redirect to a specific page if successful
-            router.push(result.url || "/dashboard"); // Fallback to /dashboard
+            router.push(result.url); // Fallback to /dashboard
           }
         } catch (err) {
           // Log and handle unexpected errors

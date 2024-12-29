@@ -1,78 +1,58 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import FacebookProvider from "next-auth/providers/facebook";
- 
 import bcrypt from "bcrypt";
-import User from "@/models/user"; // Adjust the path to your User model accordingly
-
-class CustomError extends Error {
-  constructor(message, statusCode) {
-    super(message);
-    this.name = "CustomError";
-    this.statusCode = statusCode;
-  }
-}
+import User from "@/models/user"; // Adjust path as needed
 
 const authOptions = {
   providers: [
-    // Credentials Provider for Email/Password authentication
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "Email" },
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials.email || !credentials.password) {
-          throw new CustomError("Email and Password are required", 400);
+          return null;
         }
 
-        // Fetch the user from the database
         const findUser = await User.findOne({ where: { email: credentials.email } });
+        if (!findUser) return null;
 
-        if (!findUser) {
-          throw new CustomError("No user found with this email", 404);
-        }
-
-        // Validate password using bcrypt
         const isPasswordValid = await bcrypt.compare(credentials.password, findUser.password);
+        if (!isPasswordValid) return null;
 
-        if (!isPasswordValid) {
-          throw new CustomError("Invalid credentials", 401);
-        }
-
-        // Return user information on successful authentication
         return { id: findUser.id, email: findUser.email };
       },
     }),
 
-    // Facebook Provider
     FacebookProvider({
       clientId: process.env.FACEBOOK_ID,
       clientSecret: process.env.FACEBOOK_SECRET,
     }),
   ],
 
-  // JWT-based session strategy
-  session: {
-    strategy: "jwt",
-  },
-
+  session: { strategy: "jwt" },
   secret: process.env.NEXTAUTH_SECRET,
 
+  pages: {
+    signIn: "/providers", // Custom SignIn page
+  },
+
   callbacks: {
-    // Invoked after user login
     async signIn({ user, account, profile }) {
-      console.log("profile", profile);
-         console.log("account", account);
-         console.log("user", user);
       if (account.provider === "facebook" && !profile.email) {
-         
+       
         return false;
       }
       if (user) {
         try {
           // Create FormData object
+          // const highQualityImageUrl = `${profile.picture.data.url}?width=400&height=400`; // Replace with any size you want
+          // console.log("High-quality image URL:", highQualityImageUrl);
+          // // Assign the new high-quality image to the user object
+          // user.image = highQualityImageUrl;
           const formData = new FormData();
           formData.append("email", user.email);
           formData.append('password',user.id);
@@ -101,50 +81,38 @@ const authOptions = {
       }
       return true; // Allow the login
     },
+      
 
-    // Called when JWT is created or updated
-    async jwt({ token, user, account }) {
-      if (user) {
-        console.log("user", user);
-        token.id = user.id;
-        token.email = user.email;
+    // Handle custom redirection behavior
+    async redirect({ url, baseUrl }) {
+      // We prevent the callbackUrl from showing up
+      const cleanUrl = url.split('?')[0]; // Strip off the query parameters
+
+      // You can force a custom redirect here, for example, after authentication
+      if (url === baseUrl + "/api/auth/signin" || url.startsWith(baseUrl + "/providers")) {
+        return baseUrl + "/dashboard";  // Redirect to dashboard (or your desired URL)
       }
 
-      // Handle token updates for Facebook login
-      if (account?.provider === "facebook") {
-        token.provider = "facebook";
+      // Optionally, handle other scenarios or add fallback logic
+      return cleanUrl;  // Clean URL without callbackUrl
+    },
+
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
       }
       return token;
     },
 
-    // Called when session is accessed
     async session({ session, token }) {
       if (token) {
-        console.log("token", token);
-        console.log('session',session);
-        session.user = {
-          id: token.id,
-          email: token.email,
-        };
+        session.user = { id: token.id, email: token.email };
       }
       return session;
     },
-
-    // Handles redirection after login/logout
-    // async redirect({ url, baseUrl }) {
-    //    console.log("url", url);
-    //    console.log("baseUrl", baseUrl);
-    //    const newURL=baseUrl+`/dashboard`;
-    //   return url.startsWith(baseUrl) ? newURL : newURL;
-    // },
   },
-
-  // pages: {
-  //   signIn: "/login", // Custom login page
-  //   error: "/error", // Optional custom error page
-  // },
 };
 
 const handler = NextAuth(authOptions);
-export { authOptions };
 export { handler as GET, handler as POST };

@@ -55,7 +55,15 @@ const  HomePage = ({first,second}) => {
                      <button
                      onClick={()=>{
                         if(first == "LOGIN"){
-                            router.push("/login")
+                            const signed=localStorage.getItem("signed");
+                            if(signed){
+                                router.push("/login");
+                            }
+                            else{
+                                router.push("/api/auth/signin");
+                            }
+                             
+
                         }
                         else{
                             router.push("/dashboard")
