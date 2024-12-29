@@ -17,7 +17,7 @@ const authOptions = {
         email: { label: "Email", type: "email", placeholder: "Email" },
         password: { label: "Password", type: "password" },
       },
-      
+    
       async authorize(credentials) {
         // Ensure email and password are provided
         if (!credentials.email || !credentials.password) {
@@ -50,6 +50,12 @@ const authOptions = {
         };
       },
     }),
+    FacebookProvider({
+      clientId: process.env.FACEBOOK_CLIENT_ID,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET
+    }
+  ),
+    
   ],
 
   // Use JWT for session handling
