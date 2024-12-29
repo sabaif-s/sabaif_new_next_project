@@ -19,14 +19,47 @@ const SaveToDatabase = async (formData, imgUrl) => {
     return { success: false, error: error.message };
   }
 };
+async function imageUrlToFile(imageUrl, filename) {
+  try {
+    // Fetch the image data as a Blob
+    const response = await fetch(imageUrl);
+    
+    // Ensure the response is valid
+    if (!response.ok) {
+      throw new Error("Failed to fetch image");
+    }
+
+    // Convert the response to a Blob (Binary Large Object)
+    const blob = await response.blob();
+    
+    // Convert Blob to a File object
+    const file = new File([blob], filename+Date.now(), { type: blob.type });
+
+    // Now you can use the file object
+    console.log("File created:", file);
+    return file;
+  } catch (error) {
+    console.error("Error converting image URL to file:", error);
+  }
+}
 
 export async function POST(req) {
   try {
     // Authentication check (if required)
 
     // Parse form data
+    
     const formData = await req.formData();
-    const file = formData.get("file");
+    console.log("form data:",formData);
+  
+    let file = formData.get("file");
+    if (file instanceof File) {
+      console.log("The variable is a File!");
+    } else {
+      console.log("The variable is NOT a File.");
+            file=await imageUrlToFile(file,"image.jpg");
+
+    }
 
     if (!file) {
       return NextResponse.json({ message: "No file provided" }, { status: 400 });
