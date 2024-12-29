@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import FacebookProvider from "next-auth/providers/facebook";
 import bcrypt from "bcrypt";
+import { NextResponse } from "next/server";
 import User from "@/models/user"; // Adjust path as needed
 
 const authOptions = {
@@ -23,7 +24,7 @@ const authOptions = {
         const isPasswordValid = await bcrypt.compare(credentials.password, findUser.password);
         if (!isPasswordValid) return null;
 
-        return { id: findUser.id, email: findUser.email };
+        return { id: findUser.id, email: findUser.email, provider: "credentials" };
       },
     }),
 
@@ -37,25 +38,21 @@ const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 
   pages: {
-    signIn: "/providers", // Custom SignIn page
+    signIn: "/providers",
+    error: "/providers"
   },
 
   callbacks: {
     async signIn({ user, account, profile }) {
+      console.log("account", account);
       if (account.provider === "facebook" && !profile.email) {
-       
         return false;
       }
-      if (user) {
+      if (user && account.provider == "facebook") {
         try {
-          // Create FormData object
-          // const highQualityImageUrl = `${profile.picture.data.url}?width=400&height=400`; // Replace with any size you want
-          // console.log("High-quality image URL:", highQualityImageUrl);
-          // // Assign the new high-quality image to the user object
-          // user.image = highQualityImageUrl;
           const formData = new FormData();
           formData.append("email", user.email);
-          formData.append('password',user.id);
+          formData.append('password', user.id);
           formData.append("username", user.name);  // You can adjust the user info sent
           if (user.image) {
             formData.append("file", user.image);  // Assuming the image URL is present
@@ -73,17 +70,42 @@ const authOptions = {
             console.log("Successfully sent user data to API:", data);
           } else {
             const data = await response.json();
-            console.error("API response error:", data);
+            return false;
           }
         } catch (error) {
-          console.error("Error sending data to API:", error);
+          return false;
         }
       }
       return true; // Allow the login
     },
-      
 
-    // Handle custom redirection behavior
+    async jwt({ token, user, account }) {
+      if (account?.provider === "facebook" && account.access_token) {
+        token.accessToken = account.access_token;
+        token.provider = "facebook";
+        // Store Facebook access token
+      } else if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.provider = "credentials";
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (token.provider === "facebook") {
+        session.user = { id: token.id, email: token.email };
+        session.accessToken = token.accessToken;
+        session.provider = token.provider;
+        // Pass access token to the session
+      } else if (token.provider === "credentials") {
+        session.user = { id: token.id, email: token.email };
+        session.provider = token.provider;
+        // Pass user info to the session
+      }
+      return session;
+    },
+
     async redirect({ url, baseUrl }) {
       // We prevent the callbackUrl from showing up
       const cleanUrl = url.split('?')[0]; // Strip off the query parameters
@@ -95,21 +117,6 @@ const authOptions = {
 
       // Optionally, handle other scenarios or add fallback logic
       return cleanUrl;  // Clean URL without callbackUrl
-    },
-
-    async jwt({ token, user, account }) {
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-      }
-      return token;
-    },
-
-    async session({ session, token }) {
-      if (token) {
-        session.user = { id: token.id, email: token.email };
-      }
-      return session;
     },
   },
 };
