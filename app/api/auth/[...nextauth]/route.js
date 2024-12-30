@@ -48,34 +48,34 @@ const authOptions = {
       if (account.provider === "facebook" && !profile.email) {
         return false;
       }
-      if (user && account.provider == "facebook") {
-        try {
-          const formData = new FormData();
-          formData.append("email", user.email);
-          formData.append('password', user.id);
-          formData.append("username", user.name);  // You can adjust the user info sent
-          if (user.image) {
-            formData.append("file", user.image);  // Assuming the image URL is present
-          }
+      // if (user && account.provider == "facebook") {
+      //   try {
+      //     const formData = new FormData();
+      //     formData.append("email", user.email);
+      //     formData.append('password', user.id);
+      //     formData.append("username", user.name);  // You can adjust the user info sent
+      //     if (user.image) {
+      //       formData.append("file", user.image);  // Assuming the image URL is present
+      //     }
 
-          // Send FormData with POST request
-          const response = await fetch("http://localhost:3000/api/upload", { // full URL in dev
-            method: "POST",
-            body: formData,  // Automatically handled
-          });
+      //     // Send FormData with POST request
+      //     const response = await fetch("http://localhost:3000/api/upload", { // full URL in dev
+      //       method: "POST",
+      //       body: formData,  // Automatically handled
+      //     });
 
-          // Check if API response is successful
-          if (response.ok) {
-            const data = await response.json();
-            console.log("Successfully sent user data to API:", data);
-          } else {
-            const data = await response.json();
-            return false;
-          }
-        } catch (error) {
-          return false;
-        }
-      }
+      //     // Check if API response is successful
+      //     if (response.ok) {
+      //       const data = await response.json();
+      //       console.log("Successfully sent user data to API:", data);
+      //     } else {
+      //       const data = await response.json();
+      //       return false;
+      //     }
+      //   } catch (error) {
+      //     return false;
+      //   }
+      // }
       return true; // Allow the login
     },
 

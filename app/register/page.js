@@ -11,7 +11,7 @@ function Page() {
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (status !== "authenticated") {
+    if (status !== "authenticated" && localStorage.getItem('front') == "true") {
       setIsClient(true);
     }
   }, [status]);
