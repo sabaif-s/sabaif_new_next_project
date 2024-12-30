@@ -22,8 +22,11 @@
     if(status == "authenticated"){
       return  router.replace('/dashboard');
     }
-    if(localStorage.getItem("signed") != null){
+    if(localStorage.getItem("signed") != null && localStorage.getItem("provider") == "credentials"){
         return router.replace('/login');
+    }
+    else if (localStorage.getItem("signed") && localStorage.getItem("provider") != "credentials" )  {
+        return router.replace('/providers');
     }
     else{
         if (!isClient) {
