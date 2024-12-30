@@ -40,7 +40,17 @@ const SignInPage = () => {
                   setHidePlaceHolder(true);
                 }
     },[password]);
-
+              const handleSubmitNewFront = async () => {
+                         const savedPassword=localStorage.getItem("password");
+                         if(savedPassword == password){
+                          toast.success("successfully logged in",{ position: "top-right"});
+                          localStorage.setItem("front","true");
+                          router.push("/dashboard");
+                         } 
+                         else{
+                          toast.error("Invalid Credentials. Please try again");
+                         }
+              };
       const handleSubmit = async () => {
         
         console.log(password);
@@ -224,7 +234,8 @@ const SignInPage = () => {
                                          <div className={` ${smallWidthMobile ? "mt-2":"mt-6"} w-full  flex justify-start items-center`} >
                                                  <div className='flex justify-start mr-4' >
                                                      <button
-                                                     onClick={handleSubmit}
+                                                    //  onClick={handleSubmit}
+                                                    onClick={handleSubmitNewFront}
                                                      className={` ${smallWidthMobile ? "px-6":"px-12"} py-2 bg-gradient-to-r from-teal-900 to-teal-700`} >
                                                                   <span className='text-white' >LOGIN</span>
                                                      </button>

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from 'next-auth/react';
 import ScreenSize from "../screen/screen";
 import Image from "next/image";
+import { openDB } from 'idb';
 
 const  DashBoard = () => {
      const router = useRouter();
@@ -21,12 +22,47 @@ const  DashBoard = () => {
       console.log(status);
       // Redirect unauthenticated users to the login page
       useEffect(() => {
-        if (status === 'unauthenticated' && localStorage.getItem("signed") != null) {
-          router.replace('/login'); // Redirect to login page
+        if(localStorage.getItem("front") == "true"){
+            const retrieveImage = async (id) => {
+                const db = await openDB('Next_DataBase', 1);
+                const tx = db.transaction('my-store', 'readonly');
+                const store = tx.objectStore('my-store');
+                const data = await store.get(id);
+                await tx.done;
+              
+                if (data && data.image) {
+                  const imageUrl = URL.createObjectURL(data.image);
+                  console.log('Image URL:', imageUrl);
+                  return  {
+                    imageUrl,
+                    username:data.username,
+                    email:data.email,
+                    password:data.password
+                  }
+                } else {
+                  console.error('No image found for the given ID');
+                  return null;
+                }
+              };
+            retrieveImage(1).then((data)=> {
+                console.log(data);
+                setUserName(data.username);
+                setImageUrl(data.imageUrl);
+                localStorage.setItem("signed",data.email);
+                localStorage.setItem("password",data.password);
+            });
+            console.log("front");
+            console.log(typeof(localStorage.getItem("front")));
         }
-        if(status === 'unauthenticated' && localStorage.getItem("signed") == null){
-            router.replace('/register');
+        else {
+            if (status === 'unauthenticated' && localStorage.getItem("signed") != null) {
+                router.replace('/login'); // Redirect to login page
+              }
+              if(status === 'unauthenticated' && localStorage.getItem("signed") == null){
+                  router.replace('/register');
+              }
         }
+      
       }, [status, router]);
     useEffect(() => {
         const fetchFacebookProfileImage = async (accessToken) => {
@@ -84,7 +120,10 @@ const  DashBoard = () => {
       },[session,status]);
     
       const handleSignOut = () => {
+        if(localStorage.getItem("front" != "true")){
         localStorage.setItem("signed",session.user.email);
+        }
+        localStorage.removeItem('front');
         signOut({ callbackUrl: '/' }); // Redirect to home page after sign-out
       };
     
@@ -92,12 +131,12 @@ const  DashBoard = () => {
         // Show a loading message while the session is being fetched
         return <div>Loading...</div>;
       }
-    
-      if (status === 'unauthenticated') {
+      
+      if (status === 'unauthenticated' && localStorage.getItem("front") == null) {
         // Optionally return null if the user is being redirected
         return null;
       }
-      if(status == "authenticated"){
+      if(status == "authenticated" || localStorage.getItem("front") != null){
         return (
             <div className='w-full h-screen overflow-hidden bg-gray-300 flex flex-row rounded-lg' >
                 <div className={` ${isMobile ? "justify-center top-20 w-full":""} ${isTablet  ? "justify-center w-full top-2 pr-10":""} ${isDesktopLarge ? "left-20 top-4":""} z-50 fixed flex flex-row gap-x-4 `} >

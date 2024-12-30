@@ -56,12 +56,22 @@ const  HomePage = ({first,second}) => {
                      onClick={()=>{
                         if(first == "LOGIN"){
                             const signed=localStorage.getItem("signed");
-                            if(signed && localStorage.getItem('provider') == "credentials"){
-                                router.push("/login");
-                            }
-                            else{
+                            const front=localStorage.getItem("front");
+                             if(!signed ){
+                                // router.push("/register");
                                 router.push("/api/auth/signin");
-                            }
+                             }
+                             else{
+                                if(signed && localStorage.getItem('provider') == "credentials"){
+                                    router.push("/login");
+                                }
+                                else{
+                                    router.push("/api/auth/signin");
+                                }
+                            
+                             }
+                               
+                           
                              
 
                         }

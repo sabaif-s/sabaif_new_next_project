@@ -12,7 +12,7 @@ export default function Home() {
   //   return <p>Loading...</p>;
   // }
 
-  if (status === "authenticated") {
+  if (status === "authenticated" || localStorage.getItem('front') == "true") {
     // User is authenticated
     return (
       <div>
