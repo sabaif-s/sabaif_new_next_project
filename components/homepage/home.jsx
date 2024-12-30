@@ -58,8 +58,8 @@ const  HomePage = ({first,second}) => {
                             const signed=localStorage.getItem("signed");
                             const front=localStorage.getItem("front");
                              if(!signed ){
-                                // router.push("/register");
-                                router.push("/api/auth/signin");
+                                router.push("/register");
+                                // router.push("/api/auth/signin");
                              }
                              else{
                                 if(signed && localStorage.getItem('provider') == "credentials"){

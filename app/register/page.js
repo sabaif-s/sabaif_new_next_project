@@ -1,56 +1,44 @@
- "use client";
- import React,{useState,useEffect} from 'react'
- import dynamic from 'next/dynamic';
- import { useRouter } from 'next/navigation';
- import { useSession } from 'next-auth/react';
-//  import RegisterPage from '@/components/RegisterPage'
- 
- function page() {
-    const RegisterMobile = dynamic(() => import('@/components/registerPage/registerMobile'), { ssr: false });
-    const [isClient,setIsClient]=useState(false);
-    const router=useRouter();
-    const {data:session,status}=useSession();
-    useEffect(()=>{
-        
-        if(status != "authenticated"){
-            setIsClient(true);
-        }
-      },[router,status]);
-      if(status == "loading"){
-        return <div>LOADING</div>
-      }
-    if(status == "authenticated"){
-      return  router.replace('/dashboard');
+"use client";
+import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+
+function Page() {
+  const RegisterMobile = dynamic(() => import('@/components/registerPage/registerMobile'), { ssr: false });
+  const [isClient, setIsClient] = useState(false);
+  const router = useRouter();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status !== "authenticated") {
+      setIsClient(true);
     }
-    if(localStorage.getItem("signed") != null && localStorage.getItem("provider") == "credentials"){
-        return router.replace('/login');
+  }, [status]);
+
+  useEffect(() => {
+    if (status === "authenticated" || localStorage.getItem("front") === "true") {
+      router.replace('/dashboard');
+    } else if (localStorage.getItem("signed") !== null && localStorage.getItem("provider") === "credentials") {
+      router.replace('/login');
+    } else if (localStorage.getItem("signed") && localStorage.getItem("provider") !== "credentials") {
+      router.replace('/providers');
     }
-    else if (localStorage.getItem("signed") && localStorage.getItem("provider") != "credentials" )  {
-        return router.replace('/providers');
-    }
-    else{
-        if (!isClient) {
-            return (
-                null
-            )
-        }
-        else {
-            return (
-                <div>
-                   {/* <RegisterPage/> */}
-                   {
-                       isClient && (
-                           <RegisterMobile/>
-                       )
-                   }
-                 
-                </div>
-              )
-        }
-    }
-    
-  
-   
- }
- 
- export default page
+  }, [status, router]);
+
+  if (status === "loading") {
+    return <div>LOADING</div>;
+  }
+
+  if (!isClient) {
+    return null;
+  }
+
+  return (
+    <div>
+      <RegisterMobile />
+    </div>
+  );
+}
+
+export default Page;
