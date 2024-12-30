@@ -6,6 +6,7 @@ import ScreenSize from '../screen/screen';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
+import {openDB} from "idb";
  
 
 const  RegisterMobile = () => {
@@ -36,6 +37,7 @@ const  RegisterMobile = () => {
     const [newWidth,setNewWidth]=useState(0);
     const [newHeight,setNewHeight]=useState(0);
     const [fileImage,setFileImage]=useState(null);
+    const [imageIndexDB,setImageIndexDB]=useState(null);
     useEffect(()=>{
         console.log(metadata);
         const width=metadata.width;
@@ -172,10 +174,52 @@ const  RegisterMobile = () => {
         console.error("Error uploading file:", error.message);
       }
     }
-    const onSubmit = (data) => {
+    const handleDataInFront=async ()=>{
+      const db = await openDB('Next_DataBase', 1, {
+        upgrade(db) {
+          if (!db.objectStoreNames.contains('my-store')) {
+            db.createObjectStore('my-store', { keyPath: 'id', autoIncrement: true });
+          }
+        },
+      });
+    
+      const data = {
+        username: watchUserName,
+        email: email,
+        password: password,
+        phone: phone,
+        image: fileImage,
+      };
+    
+      const tx = db.transaction('my-store', 'readwrite');
+      const store = tx.objectStore('my-store');
+      await store.add(data);
+      await tx.done;
+      return true;
+    }
+  
+    
+    const onSubmit = async (data) => {
         console.log('Form submitted successfully:', data);
-         
-        handleSubmitNew();
+          const saved= await handleDataInFront();
+          if(saved){
+            localStorage.setItem("front",true);
+            localStorage.setItem('provider','credentials');
+            router.push('/dashboard');
+            console.log("data saved successfully");
+            // console.log("data saved successfully");
+            // const imageUrl = await retrieveImage(1);
+            // if (imageUrl) {
+            //   //  setImageIndexDB(imageUrl);
+            //   // Do something with the image URL, e.g., set it to state or display it
+            //   console.log('Retrieved Image URL:', imageUrl);
+            // }
+      
+          }
+          else{
+            toast.error("data not saved");
+          }
+        // handleSubmitNew();
         // reset();
       };
       const oninvalid=(error)=>{
@@ -441,52 +485,11 @@ setUserNameError(false);
                      </div>
                  </div>
                  </form>
-
-            {/* <div className='w-full h-full pt-4 px-6 bg-white rounded-twelve flex flex-col gap-y-4' >
-                 <div className='w-full h-1/6 py-6 rounded-twelve flex gap-x-4 justify-start items-start px-2 bg-yellow-200 ' >
-                  <div className='flex w-1/3 items-center h-full justify-center' >
-                      <span className='text-blue-300 text-2xl' >name <span className='text-red-600'>:</span> </span>
-                  </div>
-                  <div>
-                      <input type="text" placeholder='enter name' className='w-full text-center text-2xl rounded-lg' />
-                  </div>
-                 </div>
-                 <div className='w-full h-1/6 py-6 rounded-twelve flex gap-x-4 justify-start items-start px-2 bg-yellow-200 ' >
-                  <div className='flex w-1/3 items-center h-full justify-center' >
-                      <span className='text-blue-300 text-2xl' >email <span className='text-red-600'>:</span> </span>
-                  </div>
-                  <div>
-                      <input type="email" placeholder='enter Email' className='w-full text-center text-2xl rounded-lg' />
-                  </div>
-                 </div>
-                 <div className='w-full h-1/6 py-6 rounded-twelve flex gap-x-4 justify-start items-start px-2 bg-yellow-200 ' >
-                  <div className='flex w-1/3 items-center h-full justify-center' >
-                      <span className='text-blue-300 text-2xl' >country  </span>
-                  </div>
-                  <div>
-                      <input type="text" placeholder='enter name' className='w-full text-center text-2xl rounded-lg' />
-                  </div>
-                 </div>
-                 <div className='w-full h-1/6 py-6 rounded-twelve flex gap-x-4 justify-start items-start px-2 bg-yellow-200 ' >
-                  <div className='flex w-1/3 items-center h-full justify-center' >
-                      <span className='text-blue-300 text-2xl' >Password <span className='text-red-600'>:</span> </span>
-                  </div>
-                  <div>
-                      <input type="email" placeholder='enter Email' className='w-full text-center text-2xl rounded-lg' />
-                  </div>
-                 </div>
-                 <div className='w-full h-1/6 py-6 rounded-twelve flex gap-x-4 justify-start items-start px-2 bg-yellow-200 ' >
-                  <div className='flex w-1/3 items-center h-full justify-center' >
-                      <span className='text-blue-300 text-2xl' >New Password<span className='text-red-600'>:</span> </span>
-                  </div>
-                  <div>
-                      <input type="email" placeholder='enter Email' className='w-full text-center text-2xl rounded-lg' />
-                  </div>
-                 </div>
-                 <div className='w-full min-h-20 bg-blue-300 flex justify-center items-center' >
-                  profile image
-                 </div>
-            </div> */}
+                 <div className='fixed top-4 z-50' >
+      {/* Your component JSX */}
+      {imageIndexDB && <img src={imageIndexDB} alt="Retrieved" />}
+    </div>
+            
       </div>
         )
        }
