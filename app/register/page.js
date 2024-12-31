@@ -10,11 +10,16 @@ function Page() {
   const router = useRouter();
   const { data: session, status } = useSession();
 
-  useEffect(() => {
-    if (status !== "authenticated" && localStorage.getItem('front') == "true") {
-      setIsClient(true);
-    }
-  }, [status]);
+  // useEffect(() => {
+  //   if (status !== "authenticated" && localStorage.getItem('front') == "true") {
+  //     setIsClient(true);
+  //   }
+  // }, [status]);
+  useEffect(()=>{
+          if (typeof window !== "undefined") {
+            setIsClient(true);
+          }
+  },[]);
 
   useEffect(() => {
     if (status === "authenticated" || localStorage.getItem("front") === "true") {
@@ -31,6 +36,7 @@ function Page() {
   }
 
   if (!isClient) {
+    console.log("null");
     return null;
   }
 

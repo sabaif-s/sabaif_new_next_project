@@ -1,7 +1,7 @@
 "use client";
 import React,{useEffect,useState} from 'react';
 import { useForm } from 'react-hook-form';
-import axiosInstance from '@/app/lib/axios'; 
+ 
 import ScreenSize from '../screen/screen';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
